@@ -31,4 +31,36 @@ size_t KC__max_prime_number(size_t limit);
 void KC__calculate_count_field(size_t count_max, size_t* count_bit, size_t* count_size);
 void KC__file_error_exit(const char* file_name, const char* action, const char* msg);
 
+
+#include <stdint.h>
+
+static inline uint64_t RDTSC_START(void) {
+  unsigned cycles_low, cycles_high;
+
+  asm volatile(
+      "CPUID\n\t"
+      "RDTSC\n\t"
+      "mov %%edx, %0\n\t"
+      "mov %%eax, %1\n\t"
+      : "=r"(cycles_high), "=r"(cycles_low)::"%rax", "%rbx", "%rcx", "%rdx");
+
+  return ((uint64_t)cycles_high << 32) | cycles_low;
+}
+
+/**
+ * CITE:
+ * http://www.intel.com/content/www/us/en/embedded/training/ia-32-ia-64-benchmark-code-execution-paper.html
+ */
+static inline uint64_t RDTSCP(void) {
+  unsigned cycles_low, cycles_high;
+
+  asm volatile(
+      "RDTSCP\n\t"
+      "mov %%edx, %0\n\t"
+      "mov %%eax, %1\n\t"
+      "CPUID\n\t"
+      : "=r"(cycles_high), "=r"(cycles_low)::"%rax", "%rbx", "%rcx", "%rdx");
+
+  return ((uint64_t)cycles_high << 32) | cycles_low;
+}
 #endif

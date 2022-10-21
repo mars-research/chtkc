@@ -28,7 +28,7 @@
 #include "logging.h"
 #include "param.h"
 #include "header.h"
-
+#include "utils.h"
 
 struct KC__KmerCounter {
     KC__Param* param;
@@ -150,7 +150,7 @@ void KC__kmer_counter_work(KC__KmerCounter* kc) {
     size_t total_kmers_count = 0;
     size_t unique_kmers_count = 0;
     size_t exported_unique_kmers_count = 0;
-
+    uint64_t start_ts, end_ts;
 
     while (true) {
         n++;
@@ -170,6 +170,8 @@ void KC__kmer_counter_work(KC__KmerCounter* kc) {
             KC__file_reader_update_input(kc->file_readers[i], inputs[i]);
             pthread_create(&(read_threads[i]), NULL, KC__file_reader_work, kc->file_readers[i]);
         }
+
+        start_ts = RDTSC_START();
 
         // Start extracting threads.
         for (size_t i = 0; i < kc->kmer_processors_count; i++) {
@@ -191,6 +193,8 @@ void KC__kmer_counter_work(KC__KmerCounter* kc) {
         for (size_t i = 0; i < kc->kmer_processors_count; i++) {
             pthread_join(process_threads[i], NULL);
         }
+
+        end_ts = RDTSCP();
 
         // Start exporting threads.
         for (size_t i = 0; i < kc->kmer_processors_count; i++) {
@@ -217,6 +221,8 @@ void KC__kmer_counter_work(KC__KmerCounter* kc) {
             exported_unique_kmers_count += euc;
         }
 
+        LOGGING_INFO("Extractor took %llu cycles, %f cycles/kmer", (end_ts - start_ts),
+            (float)(end_ts - start_ts) / total_kmers_count);
 
         size_t tmp_file_size = KC__file_writer_get_tmp_file_size(kc->file_writer);
         LOGGING_DEBUG("Tmp file size: %zu", tmp_file_size);

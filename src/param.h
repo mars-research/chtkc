@@ -53,6 +53,8 @@ typedef struct {
 
     size_t mem_limit;
 
+    bool canonicalize;
+
     KC__OutputParam output_param;
 
     const char* log_file_name;

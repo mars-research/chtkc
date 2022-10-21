@@ -92,6 +92,7 @@ typedef struct {
 
 
 struct KC__KmerProcessor {
+    bool canonicalize;
     size_t id;
 
     KC__KmerExtractUnit kmer_extract_unit;
@@ -228,9 +229,10 @@ static void KC__kmer_store_unit_init(KC__KmerStoreUnit* ksu, size_t K) {
 }
 
 
-KC__KmerProcessor* KC__kmer_processor_create(KC__MemAllocator* ma, size_t id, size_t K, KC__OutputParam output_param) {
+KC__KmerProcessor* KC__kmer_processor_create(KC__MemAllocator* ma, size_t id, size_t K, bool canonicalize, KC__OutputParam output_param) {
     KC__KmerProcessor* kp = (KC__KmerProcessor*)KC__mem_aligned_alloc(ma, sizeof(KC__KmerProcessor), "kmer processor");
 
+    kp->canonicalize = canonicalize;
     kp->id = id;
 
     KC__kmer_extract_unit_init(&(kp->kmer_extract_unit), K);
@@ -307,7 +309,7 @@ static inline void KC__kmer_processor_handle_code(KC__KmerProcessor* kp, size_t 
     }
 
     KC__unit_t *canonical_kmer;
-    if (KC__kmer_extract_unit_compare_kmers(keu, keu->kmer, keu->rc_kmer) < 0)
+    if (kp->canonicalize && KC__kmer_extract_unit_compare_kmers(keu, keu->kmer, keu->rc_kmer) < 0)
         canonical_kmer = keu->kmer;
     else
         canonical_kmer = keu->rc_kmer;

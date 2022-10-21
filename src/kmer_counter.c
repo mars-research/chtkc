@@ -68,7 +68,7 @@ KC__KmerCounter* KC__kmer_counter_create(KC__MemAllocator* ma, KC__Param* param)
     kc->kmer_processors_count = param->kmer_processing_threads_count;
     kc->kmer_processors = (KC__KmerProcessor**)KC__mem_alloc(ma, sizeof(KC__KmerProcessor*) * kc->kmer_processors_count, "kmer counter kmer processors");
     for (size_t i = 0; i < kc->kmer_processors_count; i++) {
-        kc->kmer_processors[i] = KC__kmer_processor_create(ma, i, param->K, param->output_param);
+        kc->kmer_processors[i] = KC__kmer_processor_create(ma, i, param->K, param->canonicalize, param->output_param);
     }
 
     kc->read_buffer_queue = KC__buffer_queue_create(ma, param->read_buffer_size, param->read_buffers_count);

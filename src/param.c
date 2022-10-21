@@ -86,6 +86,10 @@ static error_t KC__parse_opt(int key, char* arg, struct argp_state* state) {
         case 'o':
             param->output_file_name = arg;
             break;
+        case 'C':
+            param->canonicalize = true;
+            LOGGING_WARNING("Canonicalization enabled!");
+            break;
         case KC__OPT_FA:
             param->input_file_type = KC__FILE_TYPE_FASTA;
             break;
@@ -181,6 +185,7 @@ void KC__param_init(KC__Param* param, int argc, char** argv) {
             {"count-max", KC__OPT_COUNT_MAX, "N", 0, "Max count value, default: 255", 2},
             {"filter-min", KC__OPT_FILTER_MIN, "N", 0, "Filter min value, default: 2", 2},
             {"filter-max", KC__OPT_FILTER_MAX, "N", 0, "Filter max value", 2},
+            {"canonicalize", 'C', 0, 0, "Enable canonicalization"},
 
             {"log", KC__OPT_LOG, "FILE", 0, "Log file", 3},
 

@@ -36,7 +36,7 @@ typedef void (*KC__KmerProcessorKmerCallback) (KC__KmerProcessor* kmer_processor
 typedef KC__Buffer* (*KC__KmerProcessorStoreBufferRequestCallback) (void);
 typedef void (*KC__KmerProcessorStoreBufferCompleteCallback) (KC__Buffer* buffer);
 
-KC__KmerProcessor* KC__kmer_processor_create(KC__MemAllocator* mem_allocator, size_t id, size_t K, KC__OutputParam output_param);
+KC__KmerProcessor* KC__kmer_processor_create(KC__MemAllocator* mem_allocator, size_t id, size_t K, bool canonicalize, KC__OutputParam output_param);
 void KC__kmer_processor_free(KC__MemAllocator* mem_allocator, KC__KmerProcessor* kmer_processor);
 void KC__kmer_processor_link_modules(KC__KmerProcessor* kmer_processor, KC__HashMap* hash_map, KC__BufferQueue* read_buffer_queue, KC__BufferQueue* write_buffer_queue);
 

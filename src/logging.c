@@ -23,6 +23,7 @@
 #include "logging.h"
 
 
+FILE* KC__LOG_FILE;
 static char logging_time_str[255];
 
 char* logging_time() {

@@ -89,7 +89,7 @@
 
 #include <stdio.h>
 
-FILE* KC__LOG_FILE;
+extern FILE* KC__LOG_FILE;
 
 char* logging_time();
 char* logging_src_name(char* src_path);

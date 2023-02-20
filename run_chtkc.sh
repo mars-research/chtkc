@@ -17,12 +17,17 @@ NUM_THREADS=64
 CHTKC_ARGS="-m 92G --count-max=4294967296"
 MAX_K=32
 
+LOG_PREFIX="esys23-ae-${USER}/run/"
+
+if [ ! -d ${LOG_PREFIX} ]; then
+  mkdir -p ${LOG_PREFIX}
+fi
 
 chtkc_run() {
   GENOME=${1}
   FASTA_FILE=${DATASET_ARRAY[${GENOME}]}
   for k in $(seq 4 ${MAX_K}); do
-    ./build/chtkco count -k ${k} -t ${NUM_THREADS} --fa ${FASTA_FILE} ${CHTKC_ARGS} |& tee chtkc_k${k}_t${NUM_THREADS}_${GENOME}.log;
+    ./build/chtkco count -k ${k} -t ${NUM_THREADS} --fa ${FASTA_FILE} ${CHTKC_ARGS} |& tee ${LOG_PREFIX}/chtkc_k${k}_t${NUM_THREADS}_${GENOME}.log;
   done
 }
 
@@ -31,9 +36,9 @@ chtkc_get_mops() {
   echo "k, chtkc-mops" > summary_${GENOME}.csv
 
   for k in $(seq 4 ${MAX_K}); do
-    CYCLES_PER_KMER=$(grep "cycles/kmer" chtkc_k${k}_t${NUM_THREADS}_${GENOME}.log | awk '{print $(NF-1)}')
+    CYCLES_PER_KMER=$(grep "cycles/kmer" ${LOG_PREFIX}/chtkc_k${k}_t${NUM_THREADS}_${GENOME}.log | awk '{print $(NF-1)}')
     MOPS=$(echo "${NUM_MCYCLES_PER_SEC}/${CYCLES_PER_KMER}" | bc)
-    echo "${k}, ${MOPS}" | tee -a summary_${GENOME}.csv
+    echo "${k}, ${MOPS}" | tee -a ${LOG_PREFIX}/summary_${GENOME}.csv
   done
 }
 
